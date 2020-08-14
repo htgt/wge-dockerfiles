@@ -1,0 +1,50 @@
+version: '3.7'
+services:
+    ots:
+        build: 
+            context: .
+            target: wge_ots
+        networks:
+            - wge_network
+        ports:
+            - "8080:8080"
+    db:
+        image: postgres:9.5
+        networks:
+            - wge_network
+        environment:
+            - POSTGRES_USER=${DB_USER}
+            - POSTGRES_PASSWORD=${DB_PASS} 
+        ports:
+            - "5432:5432"
+        volumes:
+            - ./postgres/postgres.conf:/etc/postgresql/postgresql.conf
+        command: ["postgres", "-c", "config_file=/etc/postgresql/postgresql.conf"]
+    wge:
+        build:
+            context: .
+            target: wge_high
+        links:
+            - ots
+            - db
+        networks:
+            - wge_network
+        ports:
+            - "8002:8002"
+            - "3371:3371"
+        environment:
+            - WGE_SERVER_EMAIL=${SERVER_EMAIL}
+            - WGE_APACHE_PORT=${APACHE_PORT}
+            - WGE_FCGI_PORT=${FCGI_PORT}
+            - WGE_DB_DSN=dbi:Pg:host=db;port=5432;dbname=postgres
+            - WGE_DB_USER=${DB_USER}
+            - WGE_DB_PASS=${DB_PASS}
+            - WGE_API_TRANSPORT=${API_TRANSPORT}
+            - WGE_OAUTH=${OAUTH}
+networks:
+    wge_network:
+        ipam:
+            config:
+                 - subnet: "192.168.0.0/24"
+        driver_opts:
+            com.networking.host_binding_ipv4: "0.0.0.0"
