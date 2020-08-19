@@ -2700,6 +2700,22 @@ COPY public.chromosomes (id, species_id, name) FROM stdin;
 
 
 --
+-- Data for Name: crispr_pair_statuses; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.crispr_pair_statuses (id, status) FROM stdin;
+-1	Error
+0	Not started
+1	Pending
+2	Finding individual off targets
+3	Persisting individual off targets
+4	Calculating paired off targets
+5	Complete
+-2	Too many individual off targets
+\.
+
+
+--
 -- Data for Name: species_default_assembly; Type: TABLE DATA; Schema: public; Owner: wge_admin
 --
 
